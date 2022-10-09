@@ -8,7 +8,9 @@ This repo is for me to explore Rust on the ESP32
 ```
 cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo
 ```
-![esp-idf-template](/images/esp-idf-template.png)
+
+![esp-idf-template](./images/esp-idf-template.png)
+
 3. Build the `Hello World` program by running `cargo build` in the new project dir. This will take a while to build the first time:
 ```
 cd esp32-rust
@@ -20,13 +22,14 @@ Finished dev [optimized + debuginfo] target(s) in 6m 40s
 ```
 espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/blinky
 ```
-![flash_esp32](/images/flash_esp32.png)
+![flash_esp32](./images/flash_esp32.png)
 5. Connect to ESP32 and monitor
 ```
 espmonitor /dev/ttyUSB0
 ```
-![espmonitor](/images/espmonitor.png)
+![espmonitor](./images/espmonitor.png)
 
 ## Links
 - [Embedded rust: compiling for ESP32 devices and creating a simple blinky](https://www.youtube.com/watch?v=Sm413MNQE_A)
 - [snasirca/rust-esp32-c3-blinky](https://github.com/snasirca/rust-esp32-c3-blinky)
+- [ivmarkov/rust-esp32-ulp-blink](https://github.com/ivmarkov/rust-esp32-ulp-blink)
