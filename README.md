@@ -28,4 +28,5 @@ espmonitor /dev/ttyUSB0
 ![espmonitor](/images/espmonitor.png)
 
 ## Links
-[Embedded rust: compiling for ESP32 devices and creating a simple blinky](https://www.youtube.com/watch?v=Sm413MNQE_A)
+- [Embedded rust: compiling for ESP32 devices and creating a simple blinky](https://www.youtube.com/watch?v=Sm413MNQE_A)
+- [snasirca/rust-esp32-c3-blinky](https://github.com/snasirca/rust-esp32-c3-blinky)
