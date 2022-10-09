@@ -1,5 +1,10 @@
+use log::*;
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
+
+use anyhow::bail;
+use anyhow::Result;
 
 use embedded_hal::digital::blocking::OutputPin;
 use embedded_svc::wifi::*;
