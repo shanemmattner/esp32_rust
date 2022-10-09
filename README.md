@@ -18,7 +18,7 @@ Finished dev [optimized + debuginfo] target(s) in 6m 40s
 ```
 4. Flash the ESP32 with the build artifact:
 ```
-espflash /dev/ttyUSB0 esp32-rust/target/xtensa-esp32-espidf/debug/esp32-rust
+espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/esp32-rust
 ```
 ![flash_esp32](/images/flash_esp32.png)
 5. Connect to ESP32 and monitor
@@ -28,3 +28,4 @@ espmonitor /dev/ttyUSB0
 ![espmonitor](/images/espmonitor.png)
 
 ## Links
+[Embedded rust: compiling for ESP32 devices and creating a simple blinky](https://www.youtube.com/watch?v=Sm413MNQE_A)
