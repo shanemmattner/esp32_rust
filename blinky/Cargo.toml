@@ -1,7 +1,7 @@
 [package]
-name = "esp32-rust"
+name = "blinky"
 version = "0.1.0"
-authors = ["Shane <shane@chewielabs.com>"]
+authors = ["Shane <shanemmattner@gmail.com>"]
 edition = "2021"
 resolver = "2"
 
