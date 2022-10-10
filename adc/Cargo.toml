@@ -1,10 +1,9 @@
 [package]
 name = "adc"
-version = "0.1.0"
+version = "0.39.0"
 authors = ["Shane <shanemmattner@gmail.com>"]
-edition = "2021"
+edition = "2018"
 resolver = "2"
-
 
 [profile.release]
 opt-level = "s"
@@ -13,25 +12,17 @@ opt-level = "s"
 debug = true # Symbols are nice and they don't increase the size on Flash
 opt-level = "z"
 
-
+[features]
+default = ["native"]
+native = ["esp-idf-sys/native"]
 
 [dependencies]
-embedded-hal     = { version = "0.2.7",  features = ["unproven"] }
-embedded-hal-1   = { version = "=1.0.0-alpha.9", optional = true, package = "embedded-hal" }
-embedded-hal-nb  = { version = "=1.0.0-alpha.1", optional = true }
-xtensa-lx        = { version = "0.7.0",  features = ["esp32"] }
-xtensa-lx-rt     = { version = "0.13.0", features = ["esp32"], optional = true }
-anyhow = { version = "1", features = ["backtrace"] }
-
-
-[dev-dependencies]
-critical-section  = "1.1.0"
-embedded-graphics = "0.7.1"
-esp-backtrace     = { version = "0.2.0", features = ["esp32", "panic-handler", "exception-handler", "print-uart"] }
-esp-println       = { version = "0.3.0", features = ["esp32"] }
-smart-leds        = "0.3.0"
-ssd1306           = "0.7.1"
+esp-idf-sys = { version = "0.31", features = ["binstart"] }
+esp-idf-hal = "0.34.1"
+embedded-hal-0-2-7 = { version = "0.2.7", package = "embedded-hal" }
+embedded-hal-1-0-0 = { version = "1.0.0-alpha.7", package = "embedded-hal" }
+nb = "1.0.0"
 
 [build-dependencies]
-embuild = "0.29"
+embuild = "0.28"
 anyhow = "1"

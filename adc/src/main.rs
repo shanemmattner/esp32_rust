@@ -1,54 +1,27 @@
-//! Connect a potentiometer to PIN25 and see the read values change when
-//! rotating the shaft. Alternatively you could also connect the PIN to GND or
-//! 3V3 to see the maximum and minimum raw values read.
+use embedded_hal_1_0_0::adc::nb::{Channel as Channel1_0_0, OneShot as OneShot1_0_0};
 
-#![no_std]
-#![no_main]
+use esp_idf_sys as _; // If using the `binstart` feature of `esp-idf-sys`, always keep this module imported
 
-use anyhow::Result;
-use esp32_hal::{
-    adc::{AdcConfig, Attenuation, ADC, ADC2},
-    clock::ClockControl,
-    gpio::IO,
-    pac::Peripherals,
-    prelude::*,
-    timer::TimerGroup,
-    Delay, Rtc,
-};
+use esp_idf_hal::adc::{self, PoweredAdc};
+use esp_idf_hal::gpio::Pin;
+use esp_idf_hal::prelude::*;
 
-use esp_backtrace as _;
-use esp_println::println;
-use xtensa_lx_rt::entry;
+fn main() {
+    esp_idf_sys::link_patches();
 
-#[entry]
-fn main() -> ! {
-    let peripherals = Peripherals::take().unwrap();
-    let system = peripherals.DPORT.split();
-    let clocks = ClockControl::boot_defaults(system.clock_control).freeze();
+    let p = Peripherals::take().unwrap();
+    let mut pin = p.pins.gpio34.into_analog_atten_11db().unwrap();
+    let config = adc::config::Config::new().calibration(true);
+    let mut adc = PoweredAdc::new(p.adc1, config).unwrap();
 
-    let timer_group0 = TimerGroup::new(peripherals.TIMG0, &clocks);
-    let mut wdt = timer_group0.wdt;
-    let mut rtc = Rtc::new(peripherals.RTC_CNTL);
-
-    // Disable MWDT and RWDT (Watchdog) flash boot protection
-    wdt.disable();
-    rtc.rwdt.disable();
-
-    let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
-
-    // Create ADC instances
-    let analog = peripherals.SENS.split();
-
-    let mut adc2_config = AdcConfig::new();
-    let mut pin25 =
-        adc2_config.enable_pin(io.pins.gpio25.into_analog(), Attenuation::Attenuation11dB);
-    let mut adc2 = ADC::<ADC2>::adc(analog.adc2, adc2_config).unwrap();
-
-    let mut delay = Delay::new(&clocks);
+    esp_idf_sys::esp!(unsafe {
+        esp_idf_sys::gpio_set_pull_mode(pin.pin(), esp_idf_sys::gpio_pull_mode_t_GPIO_PULLUP_ONLY)
+    })
+    .unwrap();
 
     loop {
-        let pin25_value: u16 = nb::block!(adc2.read(&mut pin25)).unwrap();
-        println!("PIN25 ADC reading = {}", pin25_value);
-        delay.delay_ms(1500u32);
+        let value = nb::block!(OneShot1_0_0::read(&mut adc, &mut pin)).unwrap();
+        println!("Channel: {}  Value: {}", Channel1_0_0::channel(&pin), value);
+        std::thread::sleep(std::time::Duration::from_millis(500));
     }
 }
