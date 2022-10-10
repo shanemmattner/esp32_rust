@@ -1,3 +1,4 @@
+// Code copied from https://github.com/snasirca/rust-esp32-c3-blinky/blob/main/src/main.rs
 use log::*;
 use std::sync::Arc;
 use std::thread;

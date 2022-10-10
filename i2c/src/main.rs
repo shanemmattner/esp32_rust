@@ -6,7 +6,11 @@ use esp_idf_sys as _;
 use std::thread;
 use std::time::Duration;
 
-const SX1509_i2c_addr: u8 = 0x3E;
+const SX1509_I2C_ADDR: u8 = 0x3E;
+
+const SX1509_RegDataB: u8 = 0x10;
+const SX1509_RegDataA: u8 = 0x11;
+
 fn main() {
     // Temporary. Will disappear once ESP-IDF 4.4 is released, but for now it is necessary to call this function once,
     // or else some patches to the runtime implemented by esp-idf-sys might not link properly.
@@ -22,9 +26,9 @@ fn main() {
         i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
 
     loop {
-        let mut buff: [u8; 6] = [0; 6];
-        i2cdev.write(SX1509_i2c_addr, &[0x11]).unwrap();
-        i2cdev.read(SX1509_i2c_addr, &mut buff).unwrap();
+        let mut buff: [u8; 1] = [0; 1];
+        i2cdev.write(SX1509_I2C_ADDR, &[0x11]).unwrap();
+        i2cdev.read(SX1509_I2C_ADDR, &mut buff).unwrap();
         log::info!("wai value is {:?}", buff);
         thread::sleep(Duration::from_millis(100));
     }

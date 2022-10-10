@@ -1,3 +1,4 @@
+// code adapted from https://github.com/snasirca/rust-esp32-c3-blinky/blob/main/src/main.rs
 use std::thread;
 use std::time::Duration;
 
