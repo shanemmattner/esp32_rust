@@ -14,18 +14,21 @@
 use std::thread;
 use std::time::Duration;
 
-use embedded_hal::spi::SpiDevice;
+use embedded_hal::blocking::spi;
+// use embedded_hal::spi::SpiDevice;
 
 use esp_idf_hal::peripherals::Peripherals;
 use esp_idf_hal::prelude::*;
+use esp_idf_hal::spi::SpiMasterDriver;
 use esp_idf_hal::spi::*;
 
-fn main() -> anyhow::Result<()> {
+fn main() {
     esp_idf_sys::link_patches();
 
     let peripherals = Peripherals::take().unwrap();
     let spi = peripherals.spi2;
 
+    // Use SPI2, HSPI
     let sclk = peripherals.pins.gpio14;
     let serial_in = peripherals.pins.gpio12; // SDI / MISO?
     let serial_out = peripherals.pins.gpio13; // SDO / MOSI?
@@ -42,7 +45,8 @@ fn main() -> anyhow::Result<()> {
     loop {
         // we are using thread::sleep here to make sure the watchdog isn't triggered
         thread::sleep(Duration::from_millis(500));
-        spi.transfer(&mut read, &write)?;
+        spidev.transfer(&mut read, &write)?;
+        spidev.read(&mut read);
         println!("Wrote {:x?}, read {:x?}", write, read);
     }
 }
