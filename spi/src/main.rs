@@ -14,19 +14,17 @@
 use std::thread;
 use std::time::Duration;
 
-use embedded_hal::blocking::spi;
-// use embedded_hal::spi::SpiDevice;
-
 use esp_idf_hal::peripherals::Peripherals;
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::spi::SpiMasterDriver;
+use esp_idf_hal::spi::SPI2;
 use esp_idf_hal::spi::*;
 
 fn main() {
     esp_idf_sys::link_patches();
 
     let peripherals = Peripherals::take().unwrap();
-    let spi = peripherals.spi2;
+    let spi: SPI2 = peripherals.spi2;
 
     // Use SPI2, HSPI
     let sclk = peripherals.pins.gpio14;
@@ -36,16 +34,16 @@ fn main() {
 
     println!("Starting SPI loopback test");
     let config = config::Config::new().baudrate(26.MHz().into());
-    let mut spi =
-        SpiMasterDriver::<SPI2>::new(spi, sclk, serial_out, Some(serial_in), Some(cs), &config)?;
+    let mut spidev =
+        SpiMasterDriver::<SPI2>::new(spi, sclk, serial_out, Some(serial_in), Some(cs), &config);
 
-    let mut read = [0u8; 4];
+    let mut read = [0 u8; 4];
     let write = [0xde, 0xad, 0xbe, 0xef];
 
     loop {
         // we are using thread::sleep here to make sure the watchdog isn't triggered
         thread::sleep(Duration::from_millis(500));
-        spidev.transfer(&mut read, &write)?;
+        spidev.transfer(&mut read, &write);
         spidev.read(&mut read);
         println!("Wrote {:x?}, read {:x?}", write, read);
     }
