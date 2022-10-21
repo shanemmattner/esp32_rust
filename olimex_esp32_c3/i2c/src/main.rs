@@ -3,13 +3,15 @@ use std::thread;
 use std::time::Duration;
 
 use embedded_hal::blocking::delay::DelayMs;
+use embedded_hal::blocking::i2c;
+use embedded_hal::i2c::blocking::I2c;
 use esp_idf_hal::{
     delay::FreeRtos,
     i2c::{config::MasterConfig, Master, MasterPins, I2C0},
     peripherals::Peripherals,
     prelude::*,
 };
-use esp_idf_sys::*;
+use esp_idf_sys as _; // If using the `binstart` feature of `esp-idf-sys`, always keep this module imported
 
 const SX1509_I2C_ADDR: u8 = 0x3E;
 

@@ -20,7 +20,7 @@ Finished dev [optimized + debuginfo] target(s) in 6m 40s
 ```
 4. Flash the ESP32 with the build artifact:
 ```
-espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/blinky
+espflash /dev/ttyACM0 target/xtensa-esp32-espidf/debug/blinky
 ```
 ![flash_esp32](./images/flash_esp32.png)
 5. Connect to ESP32 and monitor
