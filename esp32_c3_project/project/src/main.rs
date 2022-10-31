@@ -11,6 +11,8 @@ fn main() {
     esp_idf_sys::link_patches();
     esp_idf_svc::log::EspLogger::initialize_default();
     let per = Peripherals::take().unwrap();
+
+    // Initialize
     let sda = per.pins.gpio4.into_input_output().unwrap();
     let scl = per.pins.gpio5.into_output().unwrap();
     let i2c = per.i2c0;
@@ -19,7 +21,9 @@ fn main() {
     let mut i2c =
         i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
 
+    // ptype(&i2c);
     let mut expander = sx1509::Sx1509::new(&mut i2c, sx1509::DEFAULT_ADDRESS);
+    // ptype(&expander);
     expander.borrow(&mut i2c).software_reset().unwrap();
     expander.borrow(&mut i2c).set_bank_a_direction(0).unwrap();
     expander
@@ -29,8 +33,13 @@ fn main() {
 
     loop {
         let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
+        ptype(&buff);
         expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
-        log::info!("wai value is {:?}", buff);
+        log::info!("{:?}", buff);
         thread::sleep(Duration::from_millis(100));
     }
+}
+
+fn ptype<T>(_: &T) {
+    println!("{}", std::any::type_name::<T>())
 }
