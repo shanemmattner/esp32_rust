@@ -23,6 +23,7 @@ esp-idf-svc="0.42"
 nb = "1.0.0"
 log="0.4"
 sx1509 = "0.2.0"
+embedded-svc = "0.22"
 
 [build-dependencies]
 embuild = "0.30"
