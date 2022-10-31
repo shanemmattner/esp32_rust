@@ -1,3 +1,5 @@
+use esp_idf_hal::adc;
+use esp_idf_hal::adc::PoweredAdc;
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::units::FromValueType;
 use esp_idf_hal::{gpio, i2c};
@@ -33,3 +35,14 @@ pub fn sx1509_init(
 
     expander
 }
+
+// pub fn adc_init() -> PoweredAdc<adc::ADC1> {
+//     let peripherals = Peripherals::take().unwrap();
+//     let powered_adc1 = adc::PoweredAdc::new(
+//         peripherals.adc1,
+//         adc::config::Config::new().calibration(true),
+//     )
+//     .unwrap();
+
+//     powered_adc1
+// }

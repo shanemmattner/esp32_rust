@@ -1,3 +1,4 @@
+use embedded_hal::adc::OneShot;
 use esp_idf_hal::prelude::*;
 use esp_idf_sys as _;
 use std::thread;
@@ -19,10 +20,16 @@ fn main() {
 
     let mut expander = init::sx1509_init(&mut i2c);
 
+    // let mut powered_adc1 = init::adc_init();
+
     loop {
         let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
         expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
         log::info!("{:?}", buff);
+        // log::info!(
+        //     "A2 sensor reading: {}mV",
+        //     powered_adc1.read(&mut a1_ch0).unwrap()
+        // );
         thread::sleep(Duration::from_millis(100));
     }
 }
