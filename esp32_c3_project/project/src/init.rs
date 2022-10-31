@@ -12,7 +12,6 @@ pub fn i2c_peripheral(
     esp_idf_hal::gpio::Gpio4<esp_idf_hal::gpio::InputOutput>,
     esp_idf_hal::gpio::Gpio5<esp_idf_hal::gpio::Output>,
 > {
-    // init::i2c_peripheral(&per);
     let sda = per.pins.gpio4.into_input_output().unwrap();
     let scl = per.pins.gpio5.into_output().unwrap();
     let i2c = per.i2c0;

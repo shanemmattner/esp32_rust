@@ -15,13 +15,6 @@ fn main() {
     // // Initialize
     let per = Peripherals::take().unwrap();
 
-    // let sda = per.pins.gpio4.into_input_output().unwrap();
-    // let scl = per.pins.gpio5.into_output().unwrap();
-    // let i2c = per.i2c0;
-
-    // let config = <i2c::config::MasterConfig as Default>::default().baudrate(400.kHz().into());
-    // let mut i2c =
-    //     i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
     let mut i2c = init::i2c_peripheral(per);
 
     helpers::ptype(&i2c);
