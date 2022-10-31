@@ -5,6 +5,8 @@ use esp_idf_sys as _;
 use std::thread;
 use std::time::Duration;
 
+mod helpers;
+
 fn main() {
     // Temporary. Will disappear once ESP-IDF 4.4 is released, but for now it is necessary to call this function once,
     // or else some patches to the runtime implemented by esp-idf-sys might not link properly.
@@ -21,7 +23,7 @@ fn main() {
     let mut i2c =
         i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
 
-    // ptype(&i2c);
+    helpers::ptype(&i2c);
     let mut expander = sx1509::Sx1509::new(&mut i2c, sx1509::DEFAULT_ADDRESS);
     // ptype(&expander);
     expander.borrow(&mut i2c).software_reset().unwrap();
@@ -33,13 +35,9 @@ fn main() {
 
     loop {
         let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
-        ptype(&buff);
+        // helpers::ptype(&buff);
         expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
         log::info!("{:?}", buff);
         thread::sleep(Duration::from_millis(100));
     }
-}
-
-fn ptype<T>(_: &T) {
-    println!("{}", std::any::type_name::<T>())
 }
