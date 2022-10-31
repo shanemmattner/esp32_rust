@@ -1,7 +1,6 @@
-use crate::helpers;
-use esp_idf_hal::i2c;
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::units::FromValueType;
+use esp_idf_hal::{gpio, i2c};
 use sx1509;
 
 // Result<ST7789<SPIInterfaceNoCS<Master<SPI2, Gpio18<Unknown>, Gpio19<Unknown>, Gpio21<Unknown>, Gpio5<Unknown>>, Gpio16<Output>>, Gpio23<Output>>>
@@ -9,8 +8,8 @@ pub fn i2c_peripheral(
     per: Peripherals,
 ) -> i2c::Master<
     i2c::I2C0,
-    esp_idf_hal::gpio::Gpio4<esp_idf_hal::gpio::InputOutput>,
-    esp_idf_hal::gpio::Gpio5<esp_idf_hal::gpio::Output>,
+    esp_idf_hal::gpio::Gpio4<gpio::InputOutput>,
+    esp_idf_hal::gpio::Gpio5<gpio::Output>,
 > {
     let sda = per.pins.gpio4.into_input_output().unwrap();
     let scl = per.pins.gpio5.into_output().unwrap();
@@ -23,18 +22,9 @@ pub fn i2c_peripheral(
 }
 
 pub fn sx1509_init(
-    i2c: &mut i2c::Master<
-        i2c::I2C0,
-        esp_idf_hal::gpio::Gpio4<esp_idf_hal::gpio::InputOutput>,
-        esp_idf_hal::gpio::Gpio5<esp_idf_hal::gpio::Output>,
-    >,
-) -> sx1509::Sx1509<
-    esp_idf_hal::i2c::Master<
-        i2c::I2C0,
-        esp_idf_hal::gpio::Gpio4<esp_idf_hal::gpio::InputOutput>,
-        esp_idf_hal::gpio::Gpio5<esp_idf_hal::gpio::Output>,
-    >,
-> {
+    i2c: &mut i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
+) -> sx1509::Sx1509<i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>>
+{
     let mut expander = sx1509::Sx1509::new(i2c, sx1509::DEFAULT_ADDRESS);
     // ptype(&expander);
     expander.borrow(i2c).software_reset().unwrap();
