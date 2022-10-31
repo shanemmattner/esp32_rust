@@ -17,19 +17,10 @@ fn main() {
 
     let mut i2c = init::i2c_peripheral(per);
 
-    helpers::ptype(&i2c);
-    let mut expander = sx1509::Sx1509::new(&mut i2c, sx1509::DEFAULT_ADDRESS);
-    // ptype(&expander);
-    expander.borrow(&mut i2c).software_reset().unwrap();
-    expander.borrow(&mut i2c).set_bank_a_direction(0).unwrap();
-    expander
-        .borrow(&mut i2c)
-        .set_bank_b_direction(0xFF)
-        .unwrap();
+    let mut expander = init::sx1509_init(&mut i2c);
 
     loop {
         let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
-        // helpers::ptype(&buff);
         expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
         log::info!("{:?}", buff);
         thread::sleep(Duration::from_millis(100));

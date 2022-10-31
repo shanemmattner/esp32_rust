@@ -21,3 +21,25 @@ pub fn i2c_peripheral(
         i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
     i2c
 }
+
+pub fn sx1509_init(
+    i2c: &mut i2c::Master<
+        i2c::I2C0,
+        esp_idf_hal::gpio::Gpio4<esp_idf_hal::gpio::InputOutput>,
+        esp_idf_hal::gpio::Gpio5<esp_idf_hal::gpio::Output>,
+    >,
+) -> sx1509::Sx1509<
+    esp_idf_hal::i2c::Master<
+        i2c::I2C0,
+        esp_idf_hal::gpio::Gpio4<esp_idf_hal::gpio::InputOutput>,
+        esp_idf_hal::gpio::Gpio5<esp_idf_hal::gpio::Output>,
+    >,
+> {
+    let mut expander = sx1509::Sx1509::new(i2c, sx1509::DEFAULT_ADDRESS);
+    // ptype(&expander);
+    expander.borrow(i2c).software_reset().unwrap();
+    expander.borrow(i2c).set_bank_a_direction(0).unwrap();
+    expander.borrow(i2c).set_bank_b_direction(0xFF).unwrap();
+
+    expander
+}
