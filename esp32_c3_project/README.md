@@ -16,3 +16,5 @@
 - ### General
     - Unit tests
     - Multi-Threading
+    - CLI
+    - FreeRTOS
