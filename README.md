@@ -42,6 +42,7 @@ espmonitor /dev/ttyACM0
 
 
 ### Books
+- [The Embedded Rust Book](https://docs.rust-embedded.org/book/intro/index.html)
 - [The Rust on ESP Book](https://esp-rs.github.io/book/introduction.html)
 - [embedded-trainings-2020](https://github.com/ferrous-systems/embedded-trainings-2020)
 - [The Embedonomicon](https://docs.rust-embedded.org/embedonomicon/index.html)

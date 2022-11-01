@@ -9,7 +9,7 @@
     - ~~ADC~~
     - SPI
     - ~~I2C~~
-    - WIFI
+    - ~~WIFI~~
     - GPIO
     - Interrupt
     - DMA

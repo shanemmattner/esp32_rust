@@ -1,4 +1,7 @@
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
+
 use anyhow::bail;
+use embedded_hal::digital::v2::OutputPin;
 use embedded_svc::eth;
 use embedded_svc::eth::{Eth, TransitionalState};
 use embedded_svc::httpd::registry::*;
@@ -37,16 +40,14 @@ const SSID: &str = env!("RUST_ESP32_STD_DEMO_WIFI_SSID");
 const PASS: &str = env!("RUST_ESP32_STD_DEMO_WIFI_PASS");
 
 pub struct Board {
-    pub i2c1: i2c::Master<
-        i2c::I2C0,
-        esp_idf_hal::gpio::Gpio4<gpio::InputOutput>,
-        esp_idf_hal::gpio::Gpio5<gpio::Output>,
-    >,
+    pub i2c1: i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
     pub adc1: PoweredAdc<adc::ADC1>,
     pub adc1_ch0: gpio::Gpio0<Atten11dB<adc::ADC1>>,
     pub gpio_exp: sx1509::Sx1509<
         i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
     >,
+    pub psh_btn: gpio::Gpio9<gpio::Input>,
+    pub led: gpio::Gpio8<gpio::Output>,
 }
 
 impl Board {
@@ -74,25 +75,31 @@ impl Board {
         let adc1 = PoweredAdc::new(p.adc1, config).unwrap();
 
         // WiFi
-        let netif_stack = Arc::new(EspNetifStack::new().unwrap());
-        let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
-        let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
-        let mut wifi = wifi(
-            netif_stack.clone(),
-            sys_loop_stack.clone(),
-            default_nvs.clone(),
-        )
-        .unwrap();
+        // let netif_stack = Arc::new(EspNetifStack::new().unwrap());
+        // let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
+        // let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
+        // let _wifi = wifi(
+        //     netif_stack.clone(),
+        //     sys_loop_stack.clone(),
+        //     default_nvs.clone(),
+        // )
+        // .unwrap();
 
-        #[cfg(not(feature = "qemu"))]
-        #[cfg(esp_idf_lwip_ipv4_napt)]
-        enable_napt(&mut wifi).unwrap();
+        // #[cfg(not(feature = "qemu"))]
+        // #[cfg(esp_idf_lwip_ipv4_napt)]
+        // enable_napt(&mut wifi).unwrap();
+
+        // GPIO
+        let btn = p.pins.gpio9.into_input().unwrap();
+        let led = p.pins.gpio8.into_output().unwrap();
 
         Board {
             i2c1: i2c1,
             adc1: adc1,
             adc1_ch0: adc1_ch0,
             gpio_exp: expander,
+            psh_btn: btn,
+            led: led,
         }
     }
 }
