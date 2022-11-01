@@ -6,7 +6,7 @@
     - MQTT upload data
     - OTA
 - ### Peripherals
-    - ADC
+    - ~~ADC~~
     - SPI
     - ~~I2C~~
     - WIFI
