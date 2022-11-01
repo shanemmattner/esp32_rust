@@ -15,19 +15,28 @@ fn main() {
 
     // // Initialize peripherals
     let peripherals = Peripherals::take().unwrap();
+    let mut board = init::Board::init(peripherals);
 
     // let mut i2c = init::i2c_peripheral(peripherals);
     // let mut expander = init::sx1509_init(&mut i2c);
 
-    let (mut powered_adc1, mut a1_ch0) = init::adc_init(peripherals);
+    // let (mut powered_adc1, mut a1_ch0) = init::adc_init(peripherals);
 
     loop {
-        // let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
-        // expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
-        // log::info!("{:?}", buff);
+        let buff = board
+            .gpio_exp
+            .borrow(&mut board.i2c1)
+            .get_bank_a_data()
+            .unwrap();
+        board
+            .gpio_exp
+            .borrow(&mut board.i2c1)
+            .set_bank_b_data(buff)
+            .unwrap();
+        log::info!("{:?}", buff);
         log::info!(
             "a1_ch0 sensor reading: {}mV",
-            powered_adc1.read(&mut a1_ch0).unwrap()
+            board.adc1.read(&mut board.adc1_ch0).unwrap()
         );
         thread::sleep(Duration::from_millis(100));
     }
