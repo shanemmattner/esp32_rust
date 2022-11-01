@@ -17,11 +17,6 @@ fn main() {
     let peripherals = Peripherals::take().unwrap();
     let mut board = init::Board::init(peripherals);
 
-    // let mut i2c = init::i2c_peripheral(peripherals);
-    // let mut expander = init::sx1509_init(&mut i2c);
-
-    // let (mut powered_adc1, mut a1_ch0) = init::adc_init(peripherals);
-
     loop {
         let buff = board
             .gpio_exp

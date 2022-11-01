@@ -6,7 +6,6 @@ use esp_idf_hal::{gpio, i2c};
 use sx1509;
 
 pub struct Board {
-    /// Onboard LED 1
     pub i2c1: i2c::Master<
         i2c::I2C0,
         esp_idf_hal::gpio::Gpio4<gpio::InputOutput>,
