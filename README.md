@@ -5,8 +5,6 @@ This is my repo for exploring Rust on ESP32 boards.  The 2 folders below contain
 - `esp32_c3_project`: Folder that contains the package `project` that is the latest work-in-progress using the [Olimex ESP32-C3-DevKit-Lipo](https://www.olimex.com/Products/IoT/ESP32-C3/ESP32-C3-DevKit-Lipo/open-source-hardware)
 - `esp32_wroom`: Folder containing different packages for each peripheral.  Most of them work
 
-
-
 ## Steps to set up a new ESP32 Rust project
 1. [Install](https://github.com/esp-rs/rust-build) Rust and Xtensa build tools
     - Make sure to `sudo chmod +x export-esp.sh`

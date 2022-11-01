@@ -13,22 +13,20 @@ fn main() {
     esp_idf_sys::link_patches();
     esp_idf_svc::log::EspLogger::initialize_default();
 
-    // // Initialize
-    let mut peripherals = Peripherals::take().unwrap();
+    // // Initialize peripherals
+    let peripherals = Peripherals::take().unwrap();
 
-    let mut i2c = init::i2c_peripheral(&mut peripherals);
+    // let mut i2c = init::i2c_peripheral(peripherals);
+    // let mut expander = init::sx1509_init(&mut i2c);
 
-    let mut expander = init::sx1509_init(&mut i2c);
-
-    let mut powered_adc1 = init::adc_init();
-    let mut a1_ch0 = peripherals.pins.gpio2.into_analog_atten_11db().unwrap();
+    let (mut powered_adc1, mut a1_ch0) = init::adc_init(peripherals);
 
     loop {
-        let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
-        expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
-        log::info!("{:?}", buff);
+        // let buff = expander.borrow(&mut i2c).get_bank_a_data().unwrap();
+        // expander.borrow(&mut i2c).set_bank_b_data(buff).unwrap();
+        // log::info!("{:?}", buff);
         log::info!(
-            "A2 sensor reading: {}mV",
+            "a1_ch0 sensor reading: {}mV",
             powered_adc1.read(&mut a1_ch0).unwrap()
         );
         thread::sleep(Duration::from_millis(100));

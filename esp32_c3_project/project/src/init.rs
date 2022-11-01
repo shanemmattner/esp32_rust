@@ -1,12 +1,12 @@
-use esp_idf_hal::adc;
 use esp_idf_hal::adc::PoweredAdc;
+use esp_idf_hal::adc::{self, Atten11dB};
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::units::FromValueType;
 use esp_idf_hal::{gpio, i2c};
 use sx1509;
 
 pub fn i2c_peripheral(
-    peripherals: &mut Peripherals,
+    peripherals: Peripherals,
 ) -> i2c::Master<
     i2c::I2C0,
     esp_idf_hal::gpio::Gpio4<gpio::InputOutput>,
@@ -14,7 +14,7 @@ pub fn i2c_peripheral(
 > {
     let sda = peripherals.pins.gpio4.into_input_output().unwrap();
     let scl = peripherals.pins.gpio5.into_output().unwrap();
-    let i2c = &peripherals.i2c0;
+    let i2c = peripherals.i2c0;
 
     let config = <i2c::config::MasterConfig as Default>::default().baudrate(400.kHz().into());
     let i2c =
@@ -35,13 +35,12 @@ pub fn sx1509_init(
     expander
 }
 
-pub fn adc_init() -> PoweredAdc<adc::ADC1> {
-    let peripherals = Peripherals::take().unwrap();
-    let powered_adc1 = adc::PoweredAdc::new(
-        peripherals.adc1,
-        adc::config::Config::new().calibration(true),
-    )
-    .unwrap();
+pub fn adc_init(
+    peripherals: Peripherals,
+) -> (PoweredAdc<adc::ADC1>, gpio::Gpio0<Atten11dB<adc::ADC1>>) {
+    let pin = peripherals.pins.gpio0.into_analog_atten_11db().unwrap();
+    let config = adc::config::Config::new().calibration(true);
+    let adc = PoweredAdc::new(peripherals.adc1, config).unwrap();
 
-    powered_adc1
+    (adc, pin)
 }
