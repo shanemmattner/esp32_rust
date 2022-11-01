@@ -46,7 +46,7 @@ pub struct Board {
     pub gpio_exp: sx1509::Sx1509<
         i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
     >,
-    pub psh_btn: gpio::Gpio9<gpio::Input>,
+    pub psh_btn: gpio::Gpio1<gpio::Input>,
     pub led: gpio::Gpio8<gpio::Output>,
 }
 
@@ -90,7 +90,7 @@ impl Board {
         // enable_napt(&mut wifi).unwrap();
 
         // GPIO
-        let btn = p.pins.gpio9.into_input().unwrap();
+        let btn = p.pins.gpio1.into_input().unwrap();
         let led = p.pins.gpio8.into_output().unwrap();
 
         Board {
