@@ -1,4 +1,10 @@
-# ESP32-C3
+# ESP32-S2 Demo
+
+## Pinout
+![pinout](./ESP32-S2-DevKit-Lipo-pinout.jpg)
+
+## Github repo for board
+[ESP32-S2-DevKit-LiPo](https://github.com/OLIMEX/ESP32-S2-DevKit-LiPo)
 
 ## Tasks
 
@@ -6,13 +12,13 @@
     - MQTT upload data
     - OTA
 - ### Peripherals
-    - ~~ADC~~
+    - ADC
     - SPI
-    - ~~I2C~~
-    - ~~WIFI~~
-    - ~~GPIO~~
-        - ~~Input~~
-        - ~~Output~~
+    - I2C
+    - WIFI
+    - GPIO
+        - Input
+        - Output
     - Interrupt
     - DMA
     - UART
@@ -26,6 +32,6 @@
 export RUST_ESP32_STD_DEMO_WIFI_SSID='yourSSID'
 export RUST_ESP32_STD_DEMO_WIFI_PASS='yourPASS'
 cargo build
-espflash /dev/ttyACM0 target/riscv32imc-esp-espidf/debug/project
+espflash /dev/ttyUSB0 target/xtensa-esp32s2-espidf/debug/s2-demo
 espmonitor /dev/ttyACM0
 ```

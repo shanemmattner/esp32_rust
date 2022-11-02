@@ -1,6 +1,7 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 
 use anyhow::bail;
+use display_interface_spi::SPIInterfaceNoCS;
 use embedded_hal::digital::v2::OutputPin;
 use embedded_svc::eth;
 use embedded_svc::eth::{Eth, TransitionalState};
@@ -60,6 +61,27 @@ impl Board {
         let mut i2c1 =
             i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
 
+
+        // SPI
+        
+        let sclk = 
+        let sdo = 
+        let sdi = 
+        let cs = 
+        let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
+        let di = SPIInterfaceNoCS::new(
+            spi::Master::<spi::SPI2, _, _, _, _>::new(
+                spi,
+                spi::Pins {
+                    sclk,
+                    sdo,
+                    sdi: Option::<gpio::Gpio21<gpio::Unknown>>::None,
+                    cs: Some(cs),
+                },
+                config,
+            )?,
+            dc.into_output()?,
+        );
         // GPIO expander
         let mut expander = sx1509::Sx1509::new(&mut i2c1, sx1509::DEFAULT_ADDRESS);
         expander.borrow(&mut i2c1).software_reset().unwrap();
