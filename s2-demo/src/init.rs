@@ -46,8 +46,8 @@ pub struct Board {
     pub gpio_exp: sx1509::Sx1509<
         i2c::Master<i2c::I2C0, gpio::Gpio1<gpio::InputOutput>, gpio::Gpio2<gpio::Output>>,
     >,
-    // pub psh_btn: gpio::Gpio1<gpio::Input>,
-    // pub led: gpio::Gpio8<gpio::Output>,
+    pub psh_btn: gpio::Gpio0<gpio::Input>,
+    pub led: gpio::Gpio17<gpio::Output>,
 }
 
 impl Board {
@@ -62,6 +62,7 @@ impl Board {
 
         // GPIO expander
         let mut expander = sx1509::Sx1509::new(&mut i2c1, sx1509::DEFAULT_ADDRESS);
+        expander.borrow(&mut i2c1).set_bank_b_data(0).unwrap();
         expander.borrow(&mut i2c1).software_reset().unwrap();
         expander.borrow(&mut i2c1).set_bank_a_direction(0).unwrap();
         expander
@@ -73,6 +74,10 @@ impl Board {
         let adc1_ch2 = p.pins.gpio3.into_analog_atten_11db().unwrap();
         let config = adc::config::Config::new().calibration(true);
         let adc1 = PoweredAdc::new(p.adc1, config).unwrap();
+
+        // GPIO
+        let btn = p.pins.gpio0.into_input().unwrap();
+        let led = p.pins.gpio17.into_output().unwrap();
 
         //         // SPI
 
@@ -110,17 +115,13 @@ impl Board {
         //         // #[cfg(esp_idf_lwip_ipv4_napt)]
         //         // enable_napt(&mut wifi).unwrap();
 
-        //         // GPIO
-        //         let btn = p.pins.gpio1.into_input().unwrap();
-        //         let led = p.pins.gpio8.into_output().unwrap();
-
         Board {
             i2c1: i2c1,
             adc1: adc1,
             adc1_ch2: adc1_ch2,
             gpio_exp: expander,
-            //             psh_btn: btn,
-            //             led: led,
+            psh_btn: btn,
+            led: led,
         }
     }
 }

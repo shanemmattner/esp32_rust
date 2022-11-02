@@ -21,10 +21,10 @@ fn main() {
 
     loop {
         thread::sleep(Duration::from_millis(100));
-        // if board.psh_btn.is_low().unwrap() {
-        //     println!("pressed");
-        // }
-        // board.led.set_low().unwrap();
+        if board.psh_btn.is_low().unwrap() {
+            println!("pressed");
+        }
+        board.led.set_low().unwrap();
 
         let buff = board
             .gpio_exp
@@ -51,6 +51,6 @@ fn main() {
         }
 
         thread::sleep(Duration::from_millis(100));
-        // board.led.set_high().unwrap();
+        board.led.set_high().unwrap();
     }
 }
