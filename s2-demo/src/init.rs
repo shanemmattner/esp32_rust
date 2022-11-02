@@ -36,93 +36,94 @@ use esp_idf_svc::wifi::*;
 use std::{cell::RefCell, env, sync::atomic::*, sync::Arc, thread, time::*};
 use sx1509;
 
-// const SSID: &str = env!("RUST_ESP32_STD_DEMO_WIFI_SSID");
-// const PASS: &str = env!("RUST_ESP32_STD_DEMO_WIFI_PASS");
+const SSID: &str = env!("RUST_ESP32_STD_DEMO_WIFI_SSID");
+const PASS: &str = env!("RUST_ESP32_STD_DEMO_WIFI_PASS");
 
-// pub struct Board {
-//     pub i2c1: i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
-//     pub adc1: PoweredAdc<adc::ADC1>,
-//     pub adc1_ch0: gpio::Gpio0<Atten11dB<adc::ADC1>>,
-//     pub gpio_exp: sx1509::Sx1509<
-//         i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
-//     >,
-//     pub psh_btn: gpio::Gpio1<gpio::Input>,
-//     pub led: gpio::Gpio8<gpio::Output>,
-// }
+pub struct Board {
+    pub i2c1: i2c::Master<i2c::I2C0, gpio::Gpio1<gpio::InputOutput>, gpio::Gpio2<gpio::Output>>,
+    pub adc1: PoweredAdc<adc::ADC1>,
+    pub adc1_ch2: gpio::Gpio3<Atten11dB<adc::ADC1>>,
+    pub gpio_exp: sx1509::Sx1509<
+        i2c::Master<i2c::I2C0, gpio::Gpio1<gpio::InputOutput>, gpio::Gpio2<gpio::Output>>,
+    >,
+    // pub psh_btn: gpio::Gpio1<gpio::Input>,
+    // pub led: gpio::Gpio8<gpio::Output>,
+}
 
-// impl Board {
-//     pub fn init(p: Peripherals) -> Board {
-//         // I2C
-//         let sda = p.pins.gpio4.into_input_output().unwrap();
-//         let scl = p.pins.gpio5.into_output().unwrap();
-//         let i2c = p.i2c0;
-//         let config = <i2c::config::MasterConfig as Default>::default().baudrate(400.kHz().into());
-//         let mut i2c1 =
-//             i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
+impl Board {
+    pub fn init(p: Peripherals) -> Board {
+        // I2C
+        let sda = p.pins.gpio1.into_input_output().unwrap();
+        let scl = p.pins.gpio2.into_output().unwrap();
+        let i2c = p.i2c0;
+        let config = <i2c::config::MasterConfig as Default>::default().baudrate(400.kHz().into());
+        let mut i2c1 =
+            i2c::Master::<i2c::I2C0, _, _>::new(i2c, i2c::MasterPins { sda, scl }, config).unwrap();
 
-//         // SPI
+        // GPIO expander
+        let mut expander = sx1509::Sx1509::new(&mut i2c1, sx1509::DEFAULT_ADDRESS);
+        expander.borrow(&mut i2c1).software_reset().unwrap();
+        expander.borrow(&mut i2c1).set_bank_a_direction(0).unwrap();
+        expander
+            .borrow(&mut i2c1)
+            .set_bank_b_direction(0xFF)
+            .unwrap();
 
-//         let sclk =
-//         let sdo =
-//         let sdi =
-//         let cs =
-//         let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
-//         let di = SPIInterfaceNoCS::new(
-//             spi::Master::<spi::SPI2, _, _, _, _>::new(
-//                 spi,
-//                 spi::Pins {
-//                     sclk,
-//                     sdo,
-//                     sdi: Option::<gpio::Gpio21<gpio::Unknown>>::None,
-//                     cs: Some(cs),
-//                 },
-//                 config,
-//             )?,
-//             dc.into_output()?,
-//         );
-//         // GPIO expander
-//         let mut expander = sx1509::Sx1509::new(&mut i2c1, sx1509::DEFAULT_ADDRESS);
-//         expander.borrow(&mut i2c1).software_reset().unwrap();
-//         expander.borrow(&mut i2c1).set_bank_a_direction(0).unwrap();
-//         expander
-//             .borrow(&mut i2c1)
-//             .set_bank_b_direction(0xFF)
-//             .unwrap();
+        // ADC
+        let adc1_ch2 = p.pins.gpio3.into_analog_atten_11db().unwrap();
+        let config = adc::config::Config::new().calibration(true);
+        let adc1 = PoweredAdc::new(p.adc1, config).unwrap();
 
-//         // ADC
-//         let adc1_ch0 = p.pins.gpio0.into_analog_atten_11db().unwrap();
-//         let config = adc::config::Config::new().calibration(true);
-//         let adc1 = PoweredAdc::new(p.adc1, config).unwrap();
+        //         // SPI
 
-//         // WiFi
-//         // let netif_stack = Arc::new(EspNetifStack::new().unwrap());
-//         // let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
-//         // let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
-//         // let _wifi = wifi(
-//         //     netif_stack.clone(),
-//         //     sys_loop_stack.clone(),
-//         //     default_nvs.clone(),
-//         // )
-//         // .unwrap();
+        //         let sclk =
+        //         let sdo =
+        //         let sdi =
+        //         let cs =
+        //         let config = <spi::config::Config as Default>::default().baudrate(26.MHz().into());
+        //         let di = SPIInterfaceNoCS::new(
+        //             spi::Master::<spi::SPI2, _, _, _, _>::new(
+        //                 spi,
+        //                 spi::Pins {
+        //                     sclk,
+        //                     sdo,
+        //                     sdi: Option::<gpio::Gpio21<gpio::Unknown>>::None,
+        //                     cs: Some(cs),
+        //                 },
+        //                 config,
+        //             )?,
+        //             dc.into_output()?,
+        //         );
 
-//         // #[cfg(not(feature = "qemu"))]
-//         // #[cfg(esp_idf_lwip_ipv4_napt)]
-//         // enable_napt(&mut wifi).unwrap();
+        //         // WiFi
+        //         // let netif_stack = Arc::new(EspNetifStack::new().unwrap());
+        //         // let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
+        //         // let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
+        //         // let _wifi = wifi(
+        //         //     netif_stack.clone(),
+        //         //     sys_loop_stack.clone(),
+        //         //     default_nvs.clone(),
+        //         // )
+        //         // .unwrap();
 
-//         // GPIO
-//         let btn = p.pins.gpio1.into_input().unwrap();
-//         let led = p.pins.gpio8.into_output().unwrap();
+        //         // #[cfg(not(feature = "qemu"))]
+        //         // #[cfg(esp_idf_lwip_ipv4_napt)]
+        //         // enable_napt(&mut wifi).unwrap();
 
-//         Board {
-//             i2c1: i2c1,
-//             adc1: adc1,
-//             adc1_ch0: adc1_ch0,
-//             gpio_exp: expander,
-//             psh_btn: btn,
-//             led: led,
-//         }
-//     }
-// }
+        //         // GPIO
+        //         let btn = p.pins.gpio1.into_input().unwrap();
+        //         let led = p.pins.gpio8.into_output().unwrap();
+
+        Board {
+            i2c1: i2c1,
+            adc1: adc1,
+            adc1_ch2: adc1_ch2,
+            gpio_exp: expander,
+            //             psh_btn: btn,
+            //             led: led,
+        }
+    }
+}
 
 // #[cfg(not(feature = "qemu"))]
 // #[allow(dead_code)]
