@@ -100,20 +100,20 @@ impl Board {
         //             dc.into_output()?,
         //         );
 
-        //         // WiFi
-        //         // let netif_stack = Arc::new(EspNetifStack::new().unwrap());
-        //         // let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
-        //         // let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
-        //         // let _wifi = wifi(
-        //         //     netif_stack.clone(),
-        //         //     sys_loop_stack.clone(),
-        //         //     default_nvs.clone(),
-        //         // )
-        //         // .unwrap();
+        // WiFi
+        let netif_stack = Arc::new(EspNetifStack::new().unwrap());
+        let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
+        let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
+        let _wifi = wifi(
+            netif_stack.clone(),
+            sys_loop_stack.clone(),
+            default_nvs.clone(),
+        )
+        .unwrap();
 
-        //         // #[cfg(not(feature = "qemu"))]
-        //         // #[cfg(esp_idf_lwip_ipv4_napt)]
-        //         // enable_napt(&mut wifi).unwrap();
+        // #[cfg(not(feature = "qemu"))]
+        // #[cfg(esp_idf_lwip_ipv4_napt)]
+        // enable_napt(&mut wifi).unwrap();
 
         Board {
             i2c1: i2c1,
@@ -126,96 +126,96 @@ impl Board {
     }
 }
 
-// #[cfg(not(feature = "qemu"))]
-// #[allow(dead_code)]
-// fn wifi(
-//     netif_stack: Arc<EspNetifStack>,
-//     sys_loop_stack: Arc<EspSysLoopStack>,
-//     default_nvs: Arc<EspDefaultNvs>,
-// ) -> Result<Box<EspWifi>> {
-//     let mut wifi = Box::new(EspWifi::new(netif_stack, sys_loop_stack, default_nvs).unwrap());
+#[cfg(not(feature = "qemu"))]
+#[allow(dead_code)]
+fn wifi(
+    netif_stack: Arc<EspNetifStack>,
+    sys_loop_stack: Arc<EspSysLoopStack>,
+    default_nvs: Arc<EspDefaultNvs>,
+) -> Result<Box<EspWifi>> {
+    let mut wifi = Box::new(EspWifi::new(netif_stack, sys_loop_stack, default_nvs).unwrap());
 
-//     println!("Wifi created, about to scan");
+    println!("Wifi created, about to scan");
 
-//     let ap_printlns = wifi.scan().unwrap();
+    let ap_printlns = wifi.scan().unwrap();
 
-//     let ours = ap_printlns.into_iter().find(|a| a.ssid == SSID);
+    let ours = ap_printlns.into_iter().find(|a| a.ssid == SSID);
 
-//     let channel = if let Some(ours) = ours {
-//         println!(
-//             "Found configured access point {} on channel {}",
-//             SSID, ours.channel
-//         );
-//         Some(ours.channel)
-//     } else {
-//         println!(
-//             "Configured access point {} not found during scanning, will go with unknown channel",
-//             SSID
-//         );
-//         None
-//     };
+    let channel = if let Some(ours) = ours {
+        println!(
+            "Found configured access point {} on channel {}",
+            SSID, ours.channel
+        );
+        Some(ours.channel)
+    } else {
+        println!(
+            "Configured access point {} not found during scanning, will go with unknown channel",
+            SSID
+        );
+        None
+    };
 
-//     wifi.set_configuration(&Configuration::Mixed(
-//         ClientConfiguration {
-//             ssid: SSID.into(),
-//             password: PASS.into(),
-//             channel,
-//             ..Default::default()
-//         },
-//         AccessPointConfiguration {
-//             ssid: "aptest".into(),
-//             channel: channel.unwrap_or(1),
-//             ..Default::default()
-//         },
-//     ))
-//     .unwrap();
+    wifi.set_configuration(&Configuration::Mixed(
+        ClientConfiguration {
+            ssid: SSID.into(),
+            password: PASS.into(),
+            channel,
+            ..Default::default()
+        },
+        AccessPointConfiguration {
+            ssid: "aptest".into(),
+            channel: channel.unwrap_or(1),
+            ..Default::default()
+        },
+    ))
+    .unwrap();
 
-//     println!("Wifi configuration set, about to get status");
+    println!("Wifi configuration set, about to get status");
 
-//     wifi.wait_status_with_timeout(Duration::from_secs(20), |status| !status.is_transitional())
-//         .map_err(|e| anyhow::anyhow!("Unexpected Wifi status: {:?}", e))
-//         .unwrap();
+    wifi.wait_status_with_timeout(Duration::from_secs(20), |status| !status.is_transitional())
+        .map_err(|e| anyhow::anyhow!("Unexpected Wifi status: {:?}", e))
+        .unwrap();
 
-//     let status = wifi.get_status();
+    let status = wifi.get_status();
+    println!("STATUS:{:?}", status);
+    if let Status(
+        ClientStatus::Started(ClientConnectionStatus::Connected(ClientIpStatus::Done(ip_settings))),
+        ApStatus::Started(ApIpStatus::Done),
+    ) = status
+    {
+        println!("Wifi connected");
 
-//     if let Status(
-//         ClientStatus::Started(ClientConnectionStatus::Connected(ClientIpStatus::Done(ip_settings))),
-//         ApStatus::Started(ApIpStatus::Done),
-//     ) = status
-//     {
-//         println!("Wifi connected");
+        ping(&ip_settings).unwrap();
+    } else {
+        bail!("Unexpected Wifi status: {:?}", status);
+    }
 
-//         ping(&ip_settings).unwrap();
-//     } else {
-//         bail!("Unexpected Wifi status: {:?}", status);
-//     }
+    Ok(wifi)
+}
 
-//     Ok(wifi)
-// }
+#[cfg(not(feature = "qemu"))]
+#[cfg(esp_idf_lwip_ipv4_napt)]
+fn enable_napt(wifi: &mut EspWifi) -> Result<()> {
+    wifi.with_router_netif_mut(|netif| netif.unwrap().enable_napt(true));
 
-// #[cfg(not(feature = "qemu"))]
-// #[cfg(esp_idf_lwip_ipv4_napt)]
-// fn enable_napt(wifi: &mut EspWifi) -> Result<()> {
-//     wifi.with_router_netif_mut(|netif| netif.unwrap().enable_napt(true));
+    println!("NAPT enabled on the WiFi SoftAP!");
 
-//     println!("NAPT enabled on the WiFi SoftAP!");
+    Ok(())
+}
 
-//     Ok(())
-// }
+fn ping(ip_settings: &ipv4::ClientSettings) -> Result<()> {
+    println!("About to do some pings for {:?}", ip_settings);
 
-// fn ping(ip_settings: &ipv4::ClientSettings) -> Result<()> {
-//     println!("About to do some pings for {:?}", ip_settings);
+    let ping_summary =
+        ping::EspPing::default().ping(ip_settings.subnet.gateway, &Default::default())?;
+    if ping_summary.transmitted != ping_summary.received {
+        bail!(
+            "Pinging gateway {} resulted in timeouts",
+            ip_settings.subnet.gateway
+        );
+    }
 
-//     let ping_summary =
-//         ping::EspPing::default().ping(ip_settings.subnet.gateway, &Default::default())?;
-//     if ping_summary.transmitted != ping_summary.received {
-//         bail!(
-//             "Pinging gateway {} resulted in timeouts",
-//             ip_settings.subnet.gateway
-//         );
-//     }
+    println!("Pinging done");
 
-//     println!("Pinging done");
-
-//     Ok(())
-// }
+    Ok(())
+}

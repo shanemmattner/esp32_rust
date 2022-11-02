@@ -21,6 +21,8 @@
     - Multi-Threading
     - CLI
     - FreeRTOS
+    - Error handling
+        - Replace `Unwrap()`
 
 ```
 export RUST_ESP32_STD_DEMO_WIFI_SSID='yourSSID'

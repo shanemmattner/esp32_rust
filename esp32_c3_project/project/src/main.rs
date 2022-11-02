@@ -22,10 +22,6 @@ fn main() {
 
     loop {
         thread::sleep(Duration::from_millis(100));
-        if board.psh_btn.is_low().unwrap() {
-            println!("pressed");
-        }
-        board.led.set_low().unwrap();
 
         let buff = board
             .gpio_exp
@@ -33,19 +29,22 @@ fn main() {
             .get_bank_a_data()
             .unwrap();
 
-        if buff != 0 {
-            board
-                .gpio_exp
-                .borrow(&mut board.i2c1)
-                .set_bank_b_data(buff)
-                .unwrap();
+        board
+            .gpio_exp
+            .borrow(&mut board.i2c1)
+            .set_bank_b_data(buff)
+            .unwrap();
+
+        if board.psh_btn.is_low().unwrap() {
             log::info!(
                 "a1_ch0 sensor reading: {}mV",
                 board.adc1.read(&mut board.adc1_ch0).unwrap()
             );
+            board.led.set_high().unwrap();
+        } else {
+            board.led.set_low().unwrap();
         }
 
         thread::sleep(Duration::from_millis(100));
-        board.led.set_high().unwrap();
     }
 }
