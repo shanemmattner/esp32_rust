@@ -29,5 +29,5 @@ export RUST_ESP32_STD_DEMO_WIFI_SSID='yourSSID'
 export RUST_ESP32_STD_DEMO_WIFI_PASS='yourPASS'
 cargo build
 espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/full-project
-espmonitor /dev/ttyACM0
+espmonitor /dev/ttyUSB0
 ```

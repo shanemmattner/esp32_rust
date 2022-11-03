@@ -9,6 +9,7 @@ use std::thread;
 use std::time::Duration;
 
 mod init;
+mod wifi;
 
 fn main() {
     // Temporary. Will disappear once ESP-IDF 4.4 is released, but for now it is necessary to call this function once,
@@ -20,6 +21,7 @@ fn main() {
     let peripherals = Peripherals::take().unwrap();
 
     let mut board = init::Board::init(peripherals);
+    wifi::wifi_init();
 
     loop {
         thread::sleep(Duration::from_millis(1000));
