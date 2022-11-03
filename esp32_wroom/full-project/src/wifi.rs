@@ -14,17 +14,19 @@ use std::{cell::RefCell, env, sync::atomic::*, sync::Arc, thread, time::*};
 const WIFI_SSID: &str = env!("RUST_ESP32_STD_WIFI_SSID");
 const WIFI_PASS: &str = env!("RUST_ESP32_STD_WIFI_PASS");
 
-pub fn wifi_init() {
+pub fn wifi_init() -> Result<Box<EspWifi>> {
     let netif_stack = Arc::new(EspNetifStack::new().unwrap());
     let sys_loop_stack = Arc::new(EspSysLoopStack::new().unwrap());
     let default_nvs = Arc::new(EspDefaultNvs::new().unwrap());
 
-    let _wifi = start_wifi_client(
+    let wifi = start_wifi_client(
         netif_stack.clone(),
         sys_loop_stack.clone(),
         default_nvs.clone(),
     )
     .unwrap();
+
+    Ok(wifi)
 }
 
 fn start_wifi_client(
@@ -64,29 +66,29 @@ fn start_wifi_client(
     Ok(wifi)
 }
 
-#[cfg(not(feature = "qemu"))]
-#[cfg(esp_idf_lwip_ipv4_napt)]
-fn enable_napt(wifi: &mut EspWifi) -> Result<()> {
-    wifi.with_router_netif_mut(|netif| netif.unwrap().enable_napt(true));
+// #[cfg(not(feature = "qemu"))]
+// #[cfg(esp_idf_lwip_ipv4_napt)]
+// pub fn enable_napt(wifi: &mut EspWifi) -> Result<()> {
+//     wifi.with_router_netif_mut(|netif| netif.unwrap().enable_napt(true));
 
-    println!("NAPT enabled on the WiFi SoftAP!");
+//     println!("NAPT enabled on the WiFi SoftAP!");
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-fn ping(ip_settings: &ipv4::ClientSettings) -> Result<()> {
-    println!("About to do some pings for {:?}", ip_settings);
+// fn ping(ip_settings: &ipv4::ClientSettings) -> Result<()> {
+//     println!("About to do some pings for {:?}", ip_settings);
 
-    let ping_summary =
-        ping::EspPing::default().ping(ip_settings.subnet.gateway, &Default::default())?;
-    if ping_summary.transmitted != ping_summary.received {
-        bail!(
-            "Pinging gateway {} resulted in timeouts",
-            ip_settings.subnet.gateway
-        );
-    }
+//     let ping_summary =
+//         ping::EspPing::default().ping(ip_settings.subnet.gateway, &Default::default())?;
+//     if ping_summary.transmitted != ping_summary.received {
+//         bail!(
+//             "Pinging gateway {} resulted in timeouts",
+//             ip_settings.subnet.gateway
+//         );
+//     }
 
-    println!("Pinging done");
+//     println!("Pinging done");
 
-    Ok(())
-}
+//     Ok(())
+// }

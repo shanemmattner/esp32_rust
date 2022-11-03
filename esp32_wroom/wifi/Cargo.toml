@@ -14,7 +14,7 @@ opt-level = "z"
 
 
 [dependencies]
-embedded-hal = "1.0.0-alpha.8"
+embedded-hal = "0.2"
 embedded-svc = "0.22.0"
 esp-idf-hal = "0.38"
 esp-idf-svc = "0.42.0"

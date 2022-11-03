@@ -7,7 +7,8 @@ use std::time::Duration;
 use anyhow::bail;
 use anyhow::Result;
 
-use embedded_hal::digital::blocking::OutputPin;
+use embedded_hal::digital::v2::InputPin;
+use embedded_hal::digital::v2::OutputPin;
 use embedded_svc::wifi::*;
 use esp_idf_hal::peripherals::Peripherals;
 

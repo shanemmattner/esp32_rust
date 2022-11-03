@@ -16,15 +16,16 @@ opt-level = "z"
 pio = ["esp-idf-sys/pio"]
 
 [dependencies]
-esp-idf-sys = { version = "0.31", features = ["binstart"] }
-esp-idf-hal = "0.38"
 embedded-hal = "0.2"
-esp-idf-svc="0.42"
-nb = "1.0.0"
+embedded-svc = "0.22.0"
+esp-idf-hal = "0.38"
+esp-idf-svc="0.42.0"
+esp-idf-sys = { version = "0.31.6", features = ["binstart"] }
 log="0.4"
+sensible-env-logger = "0.2.0"
+anyhow = { version = "1", features = ["backtrace"] }
+nb = "1.0.0"
 sx1509 = "0.2.0"
-embedded-svc = "0.22"
-anyhow = "1"
 
 [build-dependencies]
 embuild = "0.30"
