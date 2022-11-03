@@ -1,19 +1,9 @@
+use embedded_svc::httpd::*;
 use embedded_svc::mqtt::client::utils::ConnState;
 use embedded_svc::mqtt::client::{Client, Connection, MessageImpl, Publish, QoS};
 use esp_idf_svc::mqtt::client::*;
 use esp_idf_sys::{esp, EspError};
 use std::{cell::RefCell, env, sync::atomic::*, sync::Arc, thread, time::*};
-
-// use anyhow::bail;
-// use embedded_hal::adc::OneShot;
-// use embedded_hal::blocking::delay::DelayMs;
-// use embedded_hal::digital::v2::OutputPin;
-// use embedded_svc::eth;
-// use embedded_svc::eth::{Eth, TransitionalState};
-// use embedded_svc::httpd::registry::*;
-use embedded_svc::httpd::*;
-// use embedded_svc::io;
-// use embedded_svc::ipv4;
 
 pub fn mqtt_init() {
     let mqtt_client = test_mqtt_client().unwrap();

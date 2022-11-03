@@ -3,16 +3,20 @@
 ## Tasks
 
 - ### Cloud
-    - MQTT upload data
+    - MQTT
+        - ~~Connect~~
+        - Upload data
+        - Receive data
     - OTA
 - ### Peripherals
     - ADC
+    - Timers
     - SPI
     - I2C
-    - WIFI
+    - ~~WIFI~~
     - GPIO
         - Input
-        - Output
+        - ~~Output~~
     - Interrupt
     - DMA
     - UART
