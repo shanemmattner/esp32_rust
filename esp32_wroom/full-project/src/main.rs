@@ -17,7 +17,9 @@ use esp_idf_svc::netif::*;
 use esp_idf_svc::nvs::*;
 use esp_idf_svc::sysloop::*;
 use esp_idf_svc::wifi::*;
+
 mod init;
+mod mqtt;
 mod wifi;
 
 fn main() {
@@ -31,6 +33,8 @@ fn main() {
 
     let mut board = init::Board::init(peripherals);
     let _wifi = wifi::wifi_init();
+
+    mqtt::mqtt_init();
 
     loop {
         thread::sleep(Duration::from_millis(1000));
