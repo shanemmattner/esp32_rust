@@ -1,25 +1,26 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 
-use log::*;
-use std::sync::Arc;
-use std::thread;
-use std::time::Duration;
-
 use anyhow::bail;
 use anyhow::Result;
-
 use embedded_hal::digital::v2::InputPin;
 use embedded_hal::digital::v2::OutputPin;
 use embedded_svc::wifi::*;
 use esp_idf_hal::peripherals::Peripherals;
-
 use esp_idf_svc::netif::*;
 use esp_idf_svc::nvs::*;
 use esp_idf_svc::sysloop::*;
 use esp_idf_svc::wifi::*;
+use log::*;
+use mqttrust::encoding::v4::Pid;
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
+extern crate freertos_rs;
+use freertos_rs::*;
 
 mod init;
 mod mqtt;
+mod timers;
 mod wifi;
 
 fn main() {
@@ -35,6 +36,15 @@ fn main() {
     let _wifi = wifi::wifi_init();
 
     mqtt::mqtt_init();
+
+    let task1 = Task::new()
+        .name("hello")
+        .stack_size(128)
+        .start(|| loop {
+            println!("Hello world!");
+            CurrentTask::delay(freertos_rs::Duration::ms(1000));
+        })
+        .unwrap();
 
     loop {
         thread::sleep(Duration::from_millis(1000));

@@ -27,6 +27,7 @@
     - FreeRTOS
     - Error handling
         - Replace `Unwrap()`
+    - Pub/Sub
 
 ```
 export RUST_ESP32_STD_DEMO_WIFI_SSID='yourSSID'

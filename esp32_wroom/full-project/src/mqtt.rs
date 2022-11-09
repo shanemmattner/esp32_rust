@@ -5,11 +5,14 @@ use esp_idf_svc::mqtt::client::*;
 use esp_idf_sys::{esp, EspError};
 use std::{cell::RefCell, env, sync::atomic::*, sync::Arc, thread, time::*};
 
+const MQTT_HOST: &str = env!("RUST_ESP32_MQTT_HOST");
+const MQTT_PORT: &str = env!("RUST_ESP32_MQTT_PORT");
+
 pub fn mqtt_init() {
-    let mqtt_client = test_mqtt_client().unwrap();
+    let mqtt_client = start_mqtt_client().unwrap();
 }
 
-pub fn test_mqtt_client() -> Result<EspMqttClient<ConnState<MessageImpl, EspError>>> {
+pub fn start_mqtt_client() -> Result<EspMqttClient<ConnState<MessageImpl, EspError>>> {
     println!("About to start MQTT client");
 
     let conf = MqttClientConfiguration {
@@ -19,8 +22,8 @@ pub fn test_mqtt_client() -> Result<EspMqttClient<ConnState<MessageImpl, EspErro
         ..Default::default()
     };
 
-    let (mut client, mut connection) =
-        EspMqttClient::new_with_conn("mqtts://broker.emqx.io:8883", &conf)?;
+    let mqtt_url = format!("mqtt://{}:{}", MQTT_HOST, MQTT_PORT);
+    let (mut client, mut connection) = EspMqttClient::new_with_conn(mqtt_url, &conf)?;
 
     println!("MQTT client started");
 

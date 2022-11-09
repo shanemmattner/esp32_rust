@@ -12,6 +12,7 @@ use embedded_svc::timer::*;
 use esp_idf_hal::adc::PoweredAdc;
 use esp_idf_hal::adc::{self, Atten11dB};
 use esp_idf_hal::delay;
+use esp_idf_hal::interrupt;
 use esp_idf_hal::prelude::*;
 use esp_idf_hal::spi;
 use esp_idf_hal::units::FromValueType;
@@ -20,7 +21,7 @@ use esp_idf_svc::eventloop::*;
 use esp_idf_svc::httpd as idf;
 use esp_idf_svc::httpd::ServerRegistry;
 use esp_idf_svc::systime::EspSystemTime;
-use esp_idf_svc::timer::*;
+use esp_idf_svc::timer;
 use esp_idf_sys::EspError;
 use sx1509;
 
@@ -41,8 +42,11 @@ pub struct Board {
 impl Board {
     pub fn init(p: Peripherals) -> Board {
         // GPIO
-        // let btn = p.pins.gpio1.into_input().unwrap();
+        let btn = p.pins.gpio1.into_input().unwrap();
         let led = p.pins.gpio2.into_output().unwrap();
+
+        // INTERUPT
+        // https://esp-rs.github.io/book/writing-your-own-application/no-std-applications/interrupt.html
 
         // // I2C
         // let sda = p.pins.gpio4.into_input_output().unwrap();

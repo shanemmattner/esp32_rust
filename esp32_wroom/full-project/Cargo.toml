@@ -26,6 +26,9 @@ sensible-env-logger = "0.2.0"
 anyhow = { version = "1", features = ["backtrace"] }
 nb = "1.0.0"
 sx1509 = "0.2.0"
+mqttrust = "0.6.0"
+freertos_rs = "0.3"
+
 
 [build-dependencies]
 embuild = "0.30"
