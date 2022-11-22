@@ -24,4 +24,4 @@ nb = "1.0.0"
 
 [build-dependencies]
 embuild = "0.28"
-anyhow = "0.4"
+anyhow = "1.0"

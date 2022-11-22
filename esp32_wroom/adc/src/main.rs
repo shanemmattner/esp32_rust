@@ -21,7 +21,7 @@ fn main() {
 
     loop {
         let value = nb::block!(OneShot1_0_0::read(&mut adc, &mut pin)).unwrap();
-        println!("Channel: {}  Value: {}", Channel1_0_0::channel(&pin), value);
-        std::thread::sleep(std::time::Duration::from_millis(500));
+        println!("val:{}", value);
+        std::thread::sleep(std::time::Duration::from_millis(100));
     }
 }

@@ -1,3 +1,4 @@
+#![allow(unused_imports, dead_code)]
 use anyhow::bail;
 use anyhow::Result;
 use embedded_svc::ipv4;

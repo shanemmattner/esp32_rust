@@ -1,3 +1,4 @@
+#![allow(unused_imports, dead_code)]
 use embedded_hal::adc::OneShot;
 use embedded_hal::digital::v2::InputPin;
 use embedded_hal::digital::v2::OutputPin;
@@ -23,22 +24,23 @@ fn main() {
     let mut board = init::Board::init(peripherals);
 
     // wifi::wifi_init();
-    let r = wifi::test_wifi();
+    // let r = wifi::test_wifi();
 
-    let ip = match r {
-        Err(e) => {
-            println!("Wifi error: {:?}", e);
-            format!("ERR: {:?}", e)
-        }
-        Ok(s) => s,
-    };
+    // let ip = match r {
+    //     Err(e) => {
+    //         println!("Wifi error: {:?}", e);
+    //         format!("ERR: {:?}", e)
+    //     }
+    //     Ok(s) => s,
+    // };
 
-    println!("ip:{}", ip);
+    // println!("ip:{}", ip);
 
-    mqtt::mqtt_init();
+    // mqtt::mqtt_init();
 
     loop {
-        thread::sleep(Duration::from_millis(100));
+        board.led.set_low().unwrap();
+        thread::sleep(Duration::from_millis(50));
 
         // let buff = board
         //     .gpio_exp
@@ -53,16 +55,13 @@ fn main() {
         //     .unwrap();
 
         // if board.psh_btn.is_low().unwrap() {
-        //     log::info!(
-        //         "a1_ch0 sensor reading: {}mV",
-        //         board.adc1.read(&mut board.adc1_ch0).unwrap()
-        //     );
+        log::info!("a1_ch0:{} ", board.adc1.read(&mut board.adc1_ch0).unwrap());
         //     board.led.set_high().unwrap();
         // } else {
         //     board.led.set_low().unwrap();
         // }
-
-        board.led.set_low().unwrap();
-        thread::sleep(Duration::from_millis(100));
+        // println!("Loop");
+        board.led.set_high().unwrap();
+        thread::sleep(Duration::from_millis(50));
     }
 }

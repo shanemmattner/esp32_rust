@@ -1,5 +1,4 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
-
 use anyhow::bail;
 use embedded_hal::digital::v2::OutputPin;
 use embedded_svc::eth;
@@ -45,8 +44,8 @@ const MQTT_PORT: &str = env!("RUST_ESP32_MQTT_PORT");
 
 pub struct Board {
     // pub i2c1: i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
-    // pub adc1: PoweredAdc<adc::ADC1>,
-    // pub adc1_ch0: gpio::Gpio0<Atten11dB<adc::ADC1>>,
+    pub adc1: PoweredAdc<adc::ADC1>,
+    pub adc1_ch0: gpio::Gpio0<Atten11dB<adc::ADC1>>,
     // pub gpio_exp: sx1509::Sx1509<
     //     i2c::Master<i2c::I2C0, gpio::Gpio4<gpio::InputOutput>, gpio::Gpio5<gpio::Output>>,
     // >,
@@ -78,12 +77,11 @@ impl Board {
         //     .unwrap();
 
         // ADC
-        // let adc1_ch0 = p.pins.gpio0.into_analog_atten_11db().unwrap();
-        // let config = adc::config::Config::new().calibration(true);
-        // let adc1 = PoweredAdc::new(p.adc1, config).unwrap();
+        let adc1_ch0 = p.pins.gpio0.into_analog_atten_11db().unwrap();
+        let config = adc::config::Config::new().calibration(true);
+        let adc1 = PoweredAdc::new(p.adc1, config).unwrap();
 
         // SPI
-
         // let sclk =
         // let sdo =
         // let sdi =
@@ -107,8 +105,8 @@ impl Board {
 
         Board {
             // i2c1: i2c1,
-            // adc1: adc1,
-            // adc1_ch0: adc1_ch0,
+            adc1: adc1,
+            adc1_ch0: adc1_ch0,
             // gpio_exp: expander,
             // psh_btn: btn,
             led: led,
